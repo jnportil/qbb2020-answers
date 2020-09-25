@@ -1,42 +1,48 @@
 
 Step 1: Index the sacCer3 genome with bwa index
 
-bwa index sacCer3.fa
+    bwa index sacCer3.fa
 
 
 Step 2: Alignment with bwa mem
     
-touch run_alignment.sh
-chmod +x run_alignment.sh 
-subl run_alignment.sh 
-./run_alignment.sh
+    touch run_alignment.sh
+    chmod +x run_alignment.sh 
+    subl run_alignment.sh 
+    ./run_alignment.sh
 
 
 Step 3: Create a sorted bam file with samtools, for input to variant callers
     
-touch run_samtools.sh
-chmod +x run_samtools.sh 
-subl run_samtools.sh 
-./run_samtools.sh
+    touch run_samtools.sh
+    chmod +x run_samtools.sh 
+    subl run_samtools.sh 
+    ./run_samtools.sh
 
 
 Step 4: Variant calling with freebayes
 
-freebayes -f sacCer3.fa --genotype-qualities -p 1 srt_A01_*.bam > var.vcf
+    freebayes -f sacCer3.fa --genotype-qualities -p 1 srt_A01_*.bam > var.vcf
 
 
 Step 5: Filter variants based on genotype quality using vcffilter
     
-vcffilter var.vcf -f "QUAL > 20" >results.vcf
+    vcffilter var.vcf -f "QUAL > 20" >results.vcf
 
 
 Step 6: Decompose complex haplotypes using vcfallelicprimitives
 
-vcfallelicprimitives -k -g results.vcf > decomposed.vcf
+    vcfallelicprimitives -k -g results.vcf > decomposed.vcf
 
 
 Step 7: Variant effect prediction with snpeff ann
     
-snpeff download R64-1-1.86
+    snpeff download R64-1-1.86
 
-snpeff ann R64-1-1.86 decomposed.vcf > predict.vcf
+    snpeff ann R64-1-1.86 decomposed.vcf > predict.vcf
+
+
+
+Getting only the first 1000 lines
+
+    grep -v "^#" predict.vcf | head -n 1000 > final.vcf
